@@ -11,7 +11,7 @@ import Home from '@/pages/Home';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import Search from '@/pages/Search';
-console.log(VueRouter);
+// console.log(VueRouter);
 // 先把VueRouter原型对象的push,先保存一份
 let originPush = VueRouter.prototype.push;
 let originReplace = VueRouter.prototype.replace;

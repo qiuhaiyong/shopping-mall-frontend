@@ -1,14 +1,30 @@
 import Vue from 'vue';
 import App from './App.vue';
 
-// 路由
+// 1.三级联动组件---全局组件
+import TypeNav from '@/components/TypeNav';
+// 第一个参数：全局组件的名字  第二个参数：哪一个组件
+// console.log('---');
+// console.log(TypeNav);
+Vue.component(TypeNav.name, TypeNav)
+
+// 2.路由
 import router from '@/router';
+
+// 3.vuex
+import store from './store';
+
+
+
 Vue.config.productionTip = false
 const vue = new Vue({
   render: h => h(App),
   // 注册路由
   // 注册路由信息：当这里书写router的时候，组件身上都拥有$route和$router
-  router
+  router,
+  // 注册仓库(vuex)
+  // 组件实例的身上会多一个属性$store属性
+  store
 }).$mount('#app')
 
-console.log(vue);
+// console.log(vue);
