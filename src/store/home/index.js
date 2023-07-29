@@ -17,7 +17,7 @@ export default {
     async categoryList(context) {
       let result = await reqCategoryList()
 
-      console.log(result);
+      // console.log(result);
       if (result.code === 200) {
         context.commit('CATEGORYLIST', result.data)
       }

@@ -65,7 +65,6 @@ export default new VueRouter({
       props: ($route) => {
         return {
           keyword: $route.params.keyword,
-          k: $route.query.k
         }
       }
     },
