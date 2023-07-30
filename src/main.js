@@ -8,17 +8,28 @@ import TypeNav from '@/components/TypeNav';
 // console.log(TypeNav);
 Vue.component(TypeNav.name, TypeNav)
 
+import Carousel from '@/components/Carousel';
+Vue.component(Carousel.name, Carousel)
+
 // 2.路由
 import router from '@/router';
 
 // 3.vuex
 import store from './store';
 
+// 4.引入MockServer.js
+import '@/mock/mockServe';
 
+// 5.引入swiper样式
+import 'swiper/css/swiper.css';
 
 Vue.config.productionTip = false
 const vue = new Vue({
   render: h => h(App),
+  beforeCreate() {
+    // 配置全局事件总线$bus
+    Vue.prototype.$bus = this
+  },
   // 注册路由
   // 注册路由信息：当这里书写router的时候，组件身上都拥有$route和$router
   router,

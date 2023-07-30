@@ -4,25 +4,13 @@
     <div class="sortList clearfix">
       <div class="center">
         <!--banner轮播-->
-        <div class="swiper-container" id="mySwiper">
-          <div class="swiper-wrapper">
-            <div class="swiper-slide">
-              <img src="./images/banner1.jpg" />
-            </div>
-          </div>
-          <!-- 如果需要分页器 -->
-          <div class="swiper-pagination"></div>
-
-          <!-- 如果需要导航按钮 -->
-          <div class="swiper-button-prev"></div>
-          <div class="swiper-button-next"></div>
-        </div>
+        <Carousel :list="bannerList" />
       </div>
       <div class="right">
         <div class="news">
           <h4>
             <em class="fl">尚品汇快报</em>
-            <span class="fr tip">更多 ></span>
+            <span class="fr tip">更多</span>
           </h4>
           <div class="clearix"></div>
           <ul class="news-list unstyled">
@@ -92,7 +80,48 @@
 </template>
 
 <script>
-export default {}
+import { mapState } from 'vuex'
+import Swiper from 'swiper'
+export default {
+  computed: {
+    ...mapState('home', ['bannerList'])
+  },
+
+  // 组件加载完毕,解构有了(DOM)
+  mounted() {
+    console.log('mouted.......')
+    // 派发action:通过Vuex发送ajax请求,将数据存储在数据仓库中
+    this.$store.dispatch('home/getBannerList')
+
+    // dispatch中涉及到异步语句,new Swiper的时候vux中的数据还没获取到
+  },
+  watch: {
+    // 监听bannerList数据的变化,因为这条数据发生过变化---由空数组变为数组里面有四个元素
+    bannerList: {
+      //只能保证数据已经有了,但没办法保证v-for执行好了
+      immediate: true,
+      handler(newValue, oldValue) {
+        this.$nextTick(function () {
+          new Swiper('.swiper-container', {
+            // direction: 'vertical', // 垂直切换选项
+            loop: true, // 循环模式选项
+
+            // 如果需要分页器
+            pagination: {
+              el: '.swiper-pagination'
+            },
+
+            // 如果需要前进后退按钮
+            navigation: {
+              nextEl: '.swiper-button-next',
+              prevEl: '.swiper-button-prev'
+            }
+          })
+        })
+      }
+    }
+  }
+}
 </script>
 
 <style scoped lang="less">
@@ -110,6 +139,14 @@ export default {}
       height: 100%;
       padding: 5px;
       float: left;
+
+      #mySwiper {
+        height: 464px;
+
+        img {
+          width: 100%;
+        }
+      }
     }
 
     .right {
