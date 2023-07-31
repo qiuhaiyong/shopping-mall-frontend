@@ -11,6 +11,9 @@ Vue.component(TypeNav.name, TypeNav)
 import Carousel from '@/components/Carousel';
 Vue.component(Carousel.name, Carousel)
 
+import Pagination from '@/components/Pagination';
+Vue.component(Pagination.name, Pagination)
+
 // 2.路由
 import router from '@/router';
 
