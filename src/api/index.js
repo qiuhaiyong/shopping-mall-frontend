@@ -41,10 +41,19 @@ export const reqFloorList = () => {
 //   "trademark": "4:小米"
 // }
 
+// 获取商品接口
 export const reqGetSearchInfo = (params) => {
   return request({
     url: '/list',
     method: 'post',
     data: params
+  })
+}
+
+// 获取商品详情信息接口
+export const reqGoodsInfo = (skuId) => {
+  return request({
+    url: `/item/${skuId}`,
+    method: 'get'
   })
 }

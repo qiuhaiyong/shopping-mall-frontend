@@ -7,6 +7,7 @@ Vue.use(VueRouter)
 
 
 // 引入路由组件
+import Detail from '@/pages/Detail';
 import Home from '@/pages/Home';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
@@ -78,10 +79,22 @@ export default new VueRouter({
       component: Register,
       meta: { showFooter: false }
     },
+    {
+      path: "/detail/:skuId",
+      component: Detail,
+      meta: { showFooter: false }
+    },
     // 重定向，在项目跑起来的时候，访问/，立马让他定向到首页
     {
       path: "/",
       redirect: "/home"
     }
-  ]
+  ],
+  // 滚动行为
+  scrollBehavior(to, from, savedPosition) {
+    // 返回的y=0 代表的是滚动条在最上方
+    return {
+      y: 0
+    }
+  }
 })
