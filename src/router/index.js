@@ -7,11 +7,13 @@ Vue.use(VueRouter)
 
 
 // 引入路由组件
+import AddCartSuccess from '@/pages/AddCartSuccess';
 import Detail from '@/pages/Detail';
 import Home from '@/pages/Home';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import Search from '@/pages/Search';
+import ShopCart from '@/pages/ShopCart';
 // console.log(VueRouter);
 // 先把VueRouter原型对象的push,先保存一份
 let originPush = VueRouter.prototype.push;
@@ -83,6 +85,16 @@ export default new VueRouter({
       path: "/detail/:skuId",
       component: Detail,
       meta: { showFooter: false }
+    },
+    {
+      path: '/addcartsuccess/:skuNum',
+      name: 'addcartsuccess',
+      component: AddCartSuccess
+    },
+    {
+      path: '/shopcart',
+      name: "shopcart",
+      component: ShopCart
     },
     // 重定向，在项目跑起来的时候，访问/，立马让他定向到首页
     {

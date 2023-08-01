@@ -57,3 +57,40 @@ export const reqGoodsInfo = (skuId) => {
     method: 'get'
   })
 }
+
+// 将产品添加到购物车中，(或者更新某一个产品的个数)
+export const reqAddOrUpdateShopCart = (skuId, skuNum) => {
+  return request({
+    url: `/cart/addToCart/${skuId}/${skuNum}`,
+    method: 'post'
+  })
+}
+
+// /cart/cartList 获取购物车列表
+export const reqCartList = (skuId, skuNum) => {
+  return request({
+    url: `/cart/cartList`,
+    method: 'get'
+  })
+}
+
+// 删除购物车商品
+// /cart/deleteCart/{skuId}
+export const reqDeleteCart = (skuId) => {
+  return request({
+    url: `/cart/deleteCart/${skuId}`,
+    method: "delete"
+  })
+}
+
+// 改变购物车中商品的选中状态
+// /api/cart/checkCart/{skuID}/{isChecked}
+// 0代表取消选中
+// 1代表选中
+
+export const reqCheckCart = (skuId, isChecked) => {
+  return request({
+    url: `/cart/checkCart/${skuId}/${isChecked}`,
+    method: 'get'
+  })
+}

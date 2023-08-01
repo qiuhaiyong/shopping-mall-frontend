@@ -18,7 +18,10 @@ const requests = axios.create({
 requests.interceptors.request.use(function (config) {
   // config 配置对象，对象里面有一个属性很重要，header请求头
   // 在发送请求之前做些什么
-
+  let uuid = localStorage.getItem('UUIDTOKEN')
+  if (uuid) {
+    config.headers.userTempId = uuid
+  }
   // 进度条开始动
   nprogress.start()
   return config;

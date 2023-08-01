@@ -16,9 +16,9 @@
         <!-- 左侧放大镜区域 -->
         <div class="previewWrap">
           <!--放大镜效果-->
-          <Zoom />
+          <Zoom :skuDefaultImg="skuInfo.skuDefaultImg" />
           <!-- 小图列表 -->
-          <ImageList />
+          <ImageList :skuImageList="skuInfo.skuImageList || []" />
         </div>
         <!-- 右侧选择区域布局 -->
         <div class="InfoWrap">
@@ -63,39 +63,19 @@
           <div class="choose">
             <div class="chooseArea">
               <div class="choosed"></div>
-              <dl>
-                <dt class="title">选择颜色</dt>
-                <dd changepirce="0" class="active">金色</dd>
-                <dd changepirce="40">银色</dd>
-                <dd changepirce="90">黑色</dd>
-              </dl>
-              <dl>
-                <dt class="title">内存容量</dt>
-                <dd changepirce="0" class="active">16G</dd>
-                <dd changepirce="300">64G</dd>
-                <dd changepirce="900">128G</dd>
-                <dd changepirce="1300">256G</dd>
-              </dl>
-              <dl>
-                <dt class="title">选择版本</dt>
-                <dd changepirce="0" class="active">公开版</dd>
-                <dd changepirce="-1000">移动版</dd>
-              </dl>
-              <dl>
-                <dt class="title">购买方式</dt>
-                <dd changepirce="0" class="active">官方标配</dd>
-                <dd changepirce="-240">优惠移动版</dd>
-                <dd changepirce="-390">电信优惠版</dd>
+              <dl v-for="spuSaleAttr in spuSaleAttrList" :key="spuSaleAttr.id">
+                <dt class="title">{{ spuSaleAttr.saleAttrName }}</dt>
+                <dd changepirce="0" :class="{ active: SaleAttrValue.isChecked == 1 }" v-for="SaleAttrValue in spuSaleAttr.spuSaleAttrValueList" :key="SaleAttrValue.id" @click="changeActive(SaleAttrValue, spuSaleAttr.spuSaleAttrValueList)">{{ SaleAttrValue.saleAttrValueName }}</dd>
               </dl>
             </div>
             <div class="cartWrap">
               <div class="controls">
-                <input autocomplete="off" class="itxt" />
-                <a href="javascript:" class="plus">+</a>
-                <a href="javascript:" class="mins">-</a>
+                <input autocomplete="off" class="itxt" v-model="skuNum" @change="changeSkuNum" />
+                <a href="javascript:" class="plus" @click="skuNum++">+</a>
+                <a href="javascript:" class="mins" @click="skuNum > 1 ? skuNum-- : 1">-</a>
               </div>
               <div class="add">
-                <a href="javascript:">加入购物车</a>
+                <a @click="addShopCar">加入购物车</a>
               </div>
             </div>
           </div>
@@ -339,7 +319,12 @@ import Zoom from './Zoom/Zoom'
 import { mapGetters } from 'vuex'
 export default {
   name: 'Detail',
-
+  data() {
+    return {
+      // 购买产品的个数
+      skuNum: 1
+    }
+  },
   components: {
     ImageList,
     Zoom
@@ -350,7 +335,57 @@ export default {
     this.$store.dispatch('detail/getGoodInfo', skuId)
   },
   computed: {
-    ...mapGetters('detail', ['categoryView', 'skuInfo'])
+    ...mapGetters('detail', ['categoryView', 'skuInfo', 'spuSaleAttrList'])
+  },
+  methods: {
+    // 售卖属性值切换高亮
+    changeActive(SaleAttrValue, spuSaleAttrValueList) {
+      // 遍历全部的售卖属性isChecked为0
+      spuSaleAttrValueList.forEach(item => {
+        item.isChecked = '0'
+      })
+      // 点击的那个属性的售卖属性值
+      SaleAttrValue.isChecked = '1'
+    },
+    // 表单元素修改产品的个数
+    changeSkuNum(event) {
+      let value = event.target.value * 1
+      // 用户输入非法
+      if (isNaN(value) || value < 1) {
+        this.skuNum = 1
+      } else {
+        // 如果有小数取整
+        this.skuNum = parseInt(value)
+      }
+    },
+    addShopCar() {
+      // 1.发请求--将产品加入到数据库(通知服务器)
+      // 2.成功-->路由跳转 传递参数
+      // 3.失败-->提示
+
+      /**
+       * 当前这里是派发一个action，也向服务器发送请求
+       */
+      this.$store
+        .dispatch('detail/addOrUpdateShopCart', {
+          skuId: this.$route.params.skuId,
+          skuNum: this.skuNum
+        })
+        .then(
+          value => {
+            // 成功进行路由跳转
+            // 在路由跳转的时候还需要将产品信息带给下一级路由
+            // 一些简单的参数通过query形式给路由组件传递过去
+            // 产品信息{比较复杂}，通过会话存储(非持久化)传递
+            this.$router.push({ name: 'addcartsuccess', params: { skuNum: this.skuNum } })
+            sessionStorage.setItem('skuInfo', JSON.stringify(this.skuInfo))
+            console.log('成功')
+          },
+          error => {
+            console.log('失败')
+          }
+        )
+    }
   }
 }
 </script>
