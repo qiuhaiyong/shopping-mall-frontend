@@ -8,12 +8,21 @@ Vue.use(VueRouter)
 
 // 引入路由组件
 import AddCartSuccess from '@/pages/AddCartSuccess';
+import Center from '@/pages/Center';
 import Detail from '@/pages/Detail';
-import Home from '@/pages/Home';
 import Login from '@/pages/Login';
+import Pay from '@/pages/Pay';
+import PaySuccess from '@/pages/PaySuccess';
 import Register from '@/pages/Register';
-import Search from '@/pages/Search';
 import ShopCart from '@/pages/ShopCart';
+import Trade from '@/pages/Trade';
+import store from '@/store';
+// 引入二级路由
+import GroupOrder from '@/pages/Center/GroupOrder';
+import MyOrder from '@/pages/Center/MyOrder';
+
+// const Home = () => import("@/pages/Home")
+
 // console.log(VueRouter);
 // 先把VueRouter原型对象的push,先保存一份
 let originPush = VueRouter.prototype.push;
@@ -43,18 +52,18 @@ VueRouter.prototype.replace = function (location, resolve, reject) {
 }
 
 // 配置路由
-export default new VueRouter({
+let router = new VueRouter({
   // 配置路由
   routes: [
     {
       path: "/home",
-      component: Home,
+      component: () => import("@/pages/Home"),
       meta: { showFooter: true }
     },
     {
       name: "search",
       path: "/search/:keyword?",
-      component: Search,
+      component: () => import('@/pages/Search'),
       meta: { showFooter: true },
       // props属性
       // 方式1 布尔值写法:只能传递params参数
@@ -96,11 +105,73 @@ export default new VueRouter({
       name: "shopcart",
       component: ShopCart
     },
+    {
+      path: '/trade',
+      component: Trade,
+      beforeEnter: (to, from, next) => {
+        // 去交易页面必须从购物车进
+        if (from.path == '/shopcart') {
+          next()
+        } else {
+          // 其他路由组件来留在当前
+          next(false)
+        }
+      }
+    },
+    {
+      path: "/pay",
+      component: Pay,
+      beforeEnter: (to, from, next) => {
+        // 去支付页面必须从交易页面来
+        if (from.path == '/trade') {
+          next()
+        } else {
+          // 其他路由组件来留在当前
+          next(false)
+        }
+      }
+    },
+    {
+      path: "/paysuccess",
+      component: PaySuccess,
+      meta: {
+        showFooter: true
+      },
+      beforeEnter: (to, from, next) => {
+        if (from.path == '/pay') {
+          next()
+        } else {
+          next(false)
+        }
+      }
+    },
+    {
+      path: '/center',
+      component: Center,
+      meta: {
+        showFooter: true
+      },
+      // 二级路由组件
+      children: [
+        {
+          path: 'myorder',
+          component: MyOrder
+        },
+        {
+          path: 'grouporder',
+          component: GroupOrder
+        },
+        {
+          path: '/center',
+          redirect: '/center/myorder'
+        }
+      ]
+    },
     // 重定向，在项目跑起来的时候，访问/，立马让他定向到首页
     {
       path: "/",
       redirect: "/home"
-    }
+    },
   ],
   // 滚动行为
   scrollBehavior(to, from, savedPosition) {
@@ -110,3 +181,45 @@ export default new VueRouter({
     }
   }
 })
+
+// 全局前置守卫
+router.beforeEach(async (to, from, next) => {
+  // next()放行  next(path)放行到指定路由  next(false)返回到from
+  // 用户登录了才有token
+  let token = localStorage.getItem('token')
+  let name = store.state.user.userInfo.name
+  if (token) {
+    if (to.path === '/login') {
+      next('/home')
+    } else {
+      // 登录了去的不是login
+      if (name) {
+        next()
+      } else {
+        try {
+          await store.dispatch('user/getUserInfo')
+          next()
+        } catch (error) {
+          // token失效了
+          // 清除token
+          await store.dispatch('user/UserLogout')
+          next('/login')
+        }
+      }
+    }
+  } else {
+    // 未登录 不能去交易,支付,个人中心
+    let toPath = to.path
+    if (toPath == '/trade' || toPath.indexOf('/pay') != -1 || toPath.indexOf('/center') != -1) {
+      // 把未登录的时候想去的地方存在路由中
+      next('/login?redirect=' + toPath)
+    } else {
+      next()
+    }
+
+
+  }
+
+})
+
+export default router

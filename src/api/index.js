@@ -94,3 +94,125 @@ export const reqCheckCart = (skuId, isChecked) => {
     method: 'get'
   })
 }
+
+// 获取验证码
+// /api/user/passport/sendCode/{phone}
+// get
+export const reqGetCode = phone => {
+  return request({
+    url: `/user/passport/sendCode/${phone}`,
+    method: 'get'
+  })
+}
+
+// 用户注册
+// /api/user/passport/register
+export const reqRegister = (data) => {
+  return request({
+    url: '/user/passport/register',
+    method: 'post',
+    data
+  })
+}
+
+// 登录
+// /api/user/passport/login
+
+export const reqUserLogin = (data) => {
+  return request({
+    url: '/user/passport/login',
+    method: 'post',
+    data
+  })
+}
+
+// 获取用户信息
+// /api/user/passport/auth/getUserInfo
+export const reqGetUserInfo = () => {
+  return request({
+    url: '/user/passport/auth/getUserInfo',
+    method: 'get',
+  })
+}
+
+// 推出登录
+// /api/user/passport/logout
+export const reqLogout = () => {
+  return request({
+    url: '/user/passport/logout',
+    method: 'get',
+  })
+}
+
+// 获取用户地址信息
+// /api/user/userAddress/auth/findUserAddressList
+export const reqAddressInfo = () => {
+  return request({
+    url: '/user/userAddress/auth/findUserAddressList',
+    method: 'get',
+  })
+}
+
+// 获取交易页商品信息
+// /api/order/auth/trade
+export const reqOrderInfo = () => {
+  return request({
+    url: '/order/auth/trade',
+    method: 'get',
+  })
+}
+
+// 提交订单
+// /api/order/auth/submitOrder?tradeNo={tradeNo}
+// {
+//   "consignee": "admin",
+//   "consigneeTel": "15011111111",
+//   "deliveryAddress": "北京市昌平区2",
+//   "paymentWay": "ONLINE",
+//   "orderComment": "xxx",
+//   "orderDetailList": [
+//       {
+//           "id": null,
+//           "orderId": null,
+//           "skuId": 6,
+//           "skuName": " Apple iPhone 11 (A2223) 128GB 红色 移动联通电信22",
+//           "imgUrl": "http://182.92.128.115:8080//rBFUDF6V0JmAG9XGAAGL4LZv5fQ163.png",
+//           "orderPrice": 4343,
+//           "skuNum": 2,
+//           "hasStock": null
+//       },
+// post请求
+export const reqSubmitOrder = (data, tradeNo) => {
+  return request({
+    url: `/order/auth/submitOrder?tradeNo=${tradeNo}`,
+    method: 'post',
+    data
+  })
+}
+
+// 获取订单支付信息
+// /api/payment/weixin/createNative/{orderId}
+export const reqPayInfo = (orderId) => {
+  return request({
+    url: `/payment/weixin/createNative/${orderId}`,
+    method: 'get'
+  })
+}
+
+// 查询支付状态
+// /api/payment/weixin/queryPayStatus/{orderId}
+export const reqQueryPayStatus = orderId => {
+  return request({
+    url: `/payment/weixin/queryPayStatus/${orderId}`,
+    method: 'get'
+  })
+}
+
+// 查询我的订单列表
+// /api/order/auth/{page}/{limit}
+export const reqMyOrderList = (pageNo, pageSize) => {
+  return request({
+    url: `/order/auth/${pageNo}/${pageSize}`,
+    method: 'get'
+  })
+}

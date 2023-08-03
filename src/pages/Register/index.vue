@@ -8,32 +8,32 @@
       </h3>
       <div class="content">
         <label>手机号:</label>
-        <input type="text" placeholder="请输入你的手机号" />
+        <input type="text" placeholder="请输入你的手机号" v-model="phone" />
         <span class="error-msg">错误提示信息</span>
       </div>
       <div class="content">
         <label>验证码:</label>
-        <input type="text" placeholder="请输入验证码" />
-        <img ref="code" src="http://182.92.128.115/api/user/passport/code" alt="code" />
+        <input type="text" placeholder="请输入验证码" v-model="code" />
+        <button style="width: 100px; height: 38px" @click="getCode">获取验证码</button>
         <span class="error-msg">错误提示信息</span>
       </div>
       <div class="content">
         <label>登录密码:</label>
-        <input type="text" placeholder="请输入你的登录密码" />
+        <input type="password" placeholder="请输入你的登录密码" v-model="password" />
         <span class="error-msg">错误提示信息</span>
       </div>
       <div class="content">
         <label>确认密码:</label>
-        <input type="text" placeholder="请输入确认密码" />
+        <input type="password" placeholder="请输入确认密码" v-model="password1" />
         <span class="error-msg">错误提示信息</span>
       </div>
       <div class="controls">
-        <input name="m1" type="checkbox" />
+        <input name="m1" type="checkbox" :checked="agree" />
         <span>同意协议并注册《尚品汇用户协议》</span>
         <span class="error-msg">错误提示信息</span>
       </div>
       <div class="btn">
-        <button>完成注册</button>
+        <button @click="userRegister">完成注册</button>
       </div>
     </div>
 
@@ -57,7 +57,48 @@
 
 <script>
 export default {
-  name: 'Register'
+  name: 'Register',
+  data() {
+    return {
+      // 收集表单数据
+      phone: '',
+      code: '',
+      // 密码
+      password: '',
+      // 确认密码
+      password1: '',
+      // 是否同意
+      agree: true
+    }
+  },
+  methods: {
+    getCode() {
+      this.$store.dispatch('user/getCode', this.phone).then(
+        value => {
+          // 将组件的code 等于仓库的code
+          this.code = this.$store.state.user.code
+        },
+        error => {
+          console.log(error)
+        }
+      )
+    },
+    // 用户注册
+    userRegister() {
+      const { phone, code, password, password1 } = this
+      if (phone && code && password && password1 && password === password1) {
+        this.$store.dispatch('user/userRegister', { phone, password, code }).then(
+          value => {
+            // 如果成功路由跳转
+            this.$router.push('/login')
+          },
+          error => {
+            alert(error)
+          }
+        )
+      }
+    }
+  }
 }
 </script>
 

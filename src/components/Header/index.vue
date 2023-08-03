@@ -6,16 +6,20 @@
       <div class="container">
         <div class="loginList">
           <p>尚品汇欢迎您！</p>
-          <p>
+          <p v-if="!userInfo.name">
             <span>请</span>
             <!-- 声明式导航:务必要有to属性 -->
             <router-link to="/login">登录</router-link>
             <router-link to="/register" class="register">免费注册</router-link>
           </p>
+          <p v-else>
+            <a>{{ userInfo.name }}</a>
+            <a class="register" @click="logout">退出登录</a>
+          </p>
         </div>
         <div class="typeList">
-          <a href="###">我的订单</a>
-          <a href="###">我的购物车</a>
+          <router-link to="/center/myorder">我的订单</router-link>
+          <router-link to="/shopcart">我的购物车</router-link>
           <a href="###">我的尚品汇</a>
           <a href="###">尚品汇会员</a>
           <a href="###">企业采购</a>
@@ -43,11 +47,15 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   data() {
     return {
       keyword: ''
     }
+  },
+  computed: {
+    ...mapState('user', ['userInfo'])
   },
   methods: {
     // 搜索按钮的回调函数:需要向search路由进行跳转
@@ -68,6 +76,19 @@ export default {
         location.query = this.$route.query
       }
       this.$router.push(location)
+    },
+    // 推出登录
+    // 1.发请求
+    // 2.清除项目中的数据(userInfo,token)
+    logout() {
+      this.$store.dispatch('user/UserLogout').then(
+        value => {
+          this.$router.push('/home')
+        },
+        error => {
+          alert(error)
+        }
+      )
     }
   },
   mounted() {

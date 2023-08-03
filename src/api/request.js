@@ -22,6 +22,12 @@ requests.interceptors.request.use(function (config) {
   if (uuid) {
     config.headers.userTempId = uuid
   }
+  let token = localStorage.getItem('token')
+  if (token) {
+    config.headers.token = token
+  }
+  // 需要携带token带给服务器
+
   // 进度条开始动
   nprogress.start()
   return config;

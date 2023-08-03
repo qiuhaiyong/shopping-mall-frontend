@@ -34,7 +34,15 @@ export default {
     ...mapState('home', ['floorList'])
   },
   mounted() {
+    // 获取floor组件的数据
     this.$store.dispatch('home/getFloorList')
+    // 获取用户信息在首页展示
+    this.$store.dispatch('user/getUserInfo').then(
+      value => {},
+      error => {
+        console.log(error)
+      }
+    )
   }
 }
 </script>
